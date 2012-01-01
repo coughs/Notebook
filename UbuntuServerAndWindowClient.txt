@@ -1,0 +1,183 @@
+Ubuntu与Window下git的配置（Ubuntu服务器 /Windows客户端）
+
+1.首先搭建Ubuntu服务器
+
+1.1 前提
+
+    1.1.1 Ubuntu服务器端（Ubuntu 10）的用户：
+
+        (1) root@server：服务器超级管理员用户
+
+        (2) a@server：服务器管理员用户
+
+        (3) git@server:git所有代码仓库和用户权限的管理者
+
+          创建方法：
+
+                       添加用户： a@server:/home$sudo useradd -m git
+
+                             设置密码： a@server:/homesudo passwd git
+
+ 
+
+ 
+
+1.2 服务器端安转配置git（用户：a@server）
+
+   a@server:/home$sudo apt-get install git-core openssh-server openssh-client
+
+ 
+
+1.3 服务器端安装 gitosis （用户：a@server）
+
+　　a@server:/home$sudo apt-get install python-setuptools
+
+　　a@server:/home$git clone git://eagain.net/gitosis.git
+
+　　a@server:/home$cd gitosis
+
+　　a@server:/home$python setup.py install
+
+ 
+
+1.4 将a@server设定为git服务器配置管理员（就是拥有对gitosis-admin.git的管理权限 ）（ 用户：a@server ）
+
+     1.4.1 生成密钥
+
+     a@server:/home$ssh-keygen -t rsa
+
+     1.4.2 拷贝公钥到服务器上（此步是为配置管理员在其他机器上，对于此实例不需要）
+
+       (1) scp .ssh/id_rsa.pub git@<server>:/tmp
+
+       (2) 或者通过手动拷贝到服务器上
+
+     1.4.3 更改公钥权限
+
+       sudo chmod a+r /tmp/id_rsa.pub
+
+ 
+
+1.5 运行gitosis （ 用户：a@server ）
+
+      a@server:/home/git$sudo -H -u git gitosis-init < /tmp/id_rsa.pub
+
+      运行结果：
+
+      Initialized empty Git repository in /home/git/gitosis-admin.git/
+      Reinitialized existing Git repository in /home/git/gitosis-admin.git/
+
+ 
+
+1.6 配置管理gitosis文件权限（ 用户：a@server ）
+
+gitosis本身也是通过一个git仓库来管理配置文件，仓库就放在了/home/git/gitosis- admin.git。
+a@server:/home/git$ sudo passwd root
+a@server:/home/git$ su
+root@server:/home/git$chmod 755 /home/git/repositories/gitosis-admin.git/hooks/post-update
+
+root@server:/home/git$exit
+
+ 
+
+1.7 在服务器上创建测试项目仓库(用户：git@server )
+
+a@s erver:/home/git$ su - git
+$ cd /home/git
+$ mkdir test.git
+$ cd test.git
+$ git init --bare
+$ exit
+
+ 
+
+1.8 管理gitosis的配置文件（ 用户：a@server ）
+
+a@server:/home$sudo git clone git@<server> /home/git/repositories/gitosis-admin.git 
+
+a@server:/home$cd gitosis-admin/
+目录keydir目录是用来存放所有需要访问git服务器的用户的ssh公钥：
+各个用户按照前面提到的办法生成各自的ssh公钥文件后，按名字命名一下，比如b.pub等，统统拷贝到keydir下：
+a@server:/home/gitosis-admin$ su root
+a@server:/home/gitosis-admin$ cp /tmp/b.pub ./keydir/b.pub
+root@server :/home/gitosis-admin $ exit 
+
+ 
+
+1.9 修改gitosis.conf文件，配置如下：（ 用户：a@server ） 
+    [gitosis]
+    [group gitosis-admin]
+    writable = gitosis-admin
+    members = a@server 
+    [group team1]
+    writable = test
+    members = a@server b
+
+配置文件表达了如下含义：gitosis-admin组成员有a, usr，该组对gitosis-admin仓库有读写权限；
+team1组有a@server，b两个成员，该组对test仓库有读写权限；
+
+当然目前这些配置文件的修改只是在你的本地，你必须推送到远程的gitserver上才能真正生效。
+加入新文件、提交并push到git服务器：
+a@server:/home/gitosis-admin $ git add .
+a@server:/home/gitosis-admin $ git commit -am “add test prj and users”
+a@server:/home/gitosis-admin $ git push origin master
+
+1.10 初始化测试项目（ 用户：a@server ） 
+好了，现在服务器就搭建完了，并且有一个空的项目teamwork在服务器上。
+
+空仓库是不能clone的，所以需要某一个有写权限的人初始 化一个版本。
+a@server:/home$ mkdir test
+a@server:/home$ cd test
+a@server:/home/test$ git init
+a@server:/home/test$ echo "/*add something*/" > hello
+a@server:/home/test$ git add .
+a@server:/home/test$ git commit -am “initial version”
+a@server:/home/test$ git remote add origin git@<server>:/home/git/test.git
+a@server:/home/test$ git push origin master
+
+ 
+
+1.11 到其他机器上，测试使用，如：b
+
+到此为止test已经有了一个版本了，team1的其他成员只要先clone一下 test仓库，就可以任意玩了。
+b@server:/home$  git clone git@<server>:/home/git/test.git
+b@server:/home$  cd test
+b@server:/home$  vim hello
+b@server:/home$  git add .
+b@server:/home$  git commit -am "b add"
+b@server:/home$  git push origin master
+b@server:/home$  exit  
+
+ 
+
+2. Windows上使用git
+
+   2.1 安装msysGit
+
+   2.2 生成密钥，如1.4.1
+
+   2.3 添加 gitosis的配置文件中，如1.8，1.9所示
+
+   2.4 测试如1.11
+
+ 
+
+3.服务器端配置git Web
+
+3.1. 安装gitweb  
+   sudo apt-get install gitweb
+
+3. 2. 安装apache2 
+  sudo apt-get install apache2
+
+3. 3. 配置gitweb 
+   3.3.1 默认没有 css 加载，把 gitweb 要用的静态文件连接到 DocumentRoot 下：
+     cd /var/ www/
+     sudo ln -s / usr/ share/ gitweb/* .  (注意：后面的点) 
+   
+   3.3.2 修改配置：
+     sudo vi /etc/ gitweb.conf
+     将 $projectroot 改为gitosis-admin.git所在目录： /home/git/repositories
+
+   3.3.3 修改 /home/git/repositories权限，默认情况下，gitosis将 repositories权限设置为不可读的
+    sudo chmod 777 -R /home/git/repositories 
