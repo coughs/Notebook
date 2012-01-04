@@ -8,6 +8,15 @@ set convert-meta on
 set output-meta on
 set convert-meta off
 步骤3：关闭git bash然后再重启
+就可以在shell环境中输入中文了
+虽然可以输入中文，但msysGit在中文的显示上依旧有问题，接下来我们来看下如果解决中文显示问题。
+
+解决msysGit的提交说明乱码问题
+git config –system i18n.logOutputEncoding gbk 用于将提交说明的输出编码设置为gbk
+git config –system i18n.commitEncoding gbk 标注提交说明所使用的字符集。
+export LESSCHARSET=utf-8 设置分页器的编码，这与git log 能否正常打印中文日志息息相关，因为git log的显示采用的就是less分页器，LESSCHARSET是分页器的环境变量，只要设置为utf-8，即可正常显示中文
+（ps：请避免使用中文名称的文件，虽然通过msysGit的设置可以正常显示中文名文件。）
+
 
 Git 系列之三：Windows 下 Git 配置与使用指南
 
