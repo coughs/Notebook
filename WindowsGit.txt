@@ -1,3 +1,14 @@
+msysGit的shell环境中无法输入中文的，想要输入中文，我们需要修改下配置文件/etc/inputrc。
+步骤1：进入git安装目录，找到/etc/inputrc；
+步骤2：修改配置项
+找到如下配置代码
+set output-meta off
+set convert-meta on
+修改成
+set output-meta on
+set convert-meta off
+步骤3：关闭git bash然后再重启
+
 Git 系列之三：Windows 下 Git 配置与使用指南
 
 一、安装
