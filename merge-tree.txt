@@ -1,0 +1,218 @@
+$ cd ../main
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git remote -v
+origin  F:/thirdparty/msysgit/work/MergeTree/main.git (fetch)
+origin  F:/thirdparty/msysgit/work/MergeTree/main.git (push)
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git remote add util ../util.git
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git remote -v
+origin  F:/thirdparty/msysgit/work/MergeTree/main.git (fetch)
+origin  F:/thirdparty/msysgit/work/MergeTree/main.git (push)
+util    ../util.git (fetch)
+util    ../util.git (push)
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git fetch util
+warning: no common commits
+remote: Counting objects: 10, done.
+remote: Compressing objects: 100% (6/6), done.
+remote: Total 10 (delta 0), reused 0 (delta 0)
+Unpacking objects: 100% (10/10), done.
+From ../util
+ * [new branch]      master     -> util/master
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git branch -a
+* master
+  remotes/origin/master
+  remotes/util/master
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ make
+ver: 2012.01.05
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git checkout -b util-branch util/master
+Branch util-branch set up to track remote branch master from util.
+Switched to a new branch 'util-branch'
+
+Chs@QIDONG-PC /work/MergeTree/main (util-branch)
+$ git branch -a
+  master
+* util-branch
+  remotes/origin/master
+  remotes/util/master
+
+Chs@QIDONG-PC /work/MergeTree/main (util-branch)
+$ make
+ver: 0.3
+Chs@QIDONG-PC /work/MergeTree/main (util-branch)
+$ git cat-file -p util-branch
+tree 1849ec0a334f0615dffb8e39ea48c40b34752d28
+parent 30951de30f87a12e0a8bfb2546d9bc62db3b79a2
+author conghs <conghs@ieslab.com.cn> 1325720508 +0800
+committer conghs <conghs@ieslab.com.cn> 1325720508 +0800
+
+.3
+
+Chs@QIDONG-PC /work/MergeTree/main (util-branch)
+$ git cat-file -p 1849ec0
+100644 blob 203eb01cf067bcfe2abedf9d472764169e995ed3    Makefile
+100644 blob b9d17cab3e30e91739bff0d2dabd2d3a52df21b3    version
+
+Chs@QIDONG-PC /work/MergeTree/main (util-branch)
+$ git checkout master
+Switched to branch 'master'
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git read-tree --prefix=lib util-branch
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git status
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#       new file:   lib/Makefile
+#       new file:   lib/version
+#
+# Changes not staged for commit:
+#   (use "git add/rm <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#       deleted:    lib/Makefile
+#       deleted:    lib/version
+#
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git checkout -- lib
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ ls
+Makefile  lib/  version
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git status
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#       new file:   lib/Makefile
+#       new file:   lib/version
+#
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git write-tree
+a118b5a9f9fe5602f9f50f73baf4ccd53f609c59
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git cat-file -p a118b5a9f9fe5602f9f50f73baf4ccd53f609c59
+100644 blob 203eb01cf067bcfe2abedf9d472764169e995ed3    Makefile
+040000 tree 1849ec0a334f0615dffb8e39ea48c40b34752d28    lib
+100644 blob f6fb475025bbc1f47f4d73e2b5b00521eb0c675b    version
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git rev-parse HEAD
+fd7a33889ea851b01381c33cbd834b90735a9045
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git rev-parse util-branch
+4d2b00961f228783d711c03a61ea8e203bd0d3c9
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ echo "subtree merge" | \
+> git commit-tree a118b5a9f9fe5602f9f50f73baf4ccd53f609c59 \
+> -p fd7a33889ea851b01381c33cbd834b90735a9045 \
+> -p 4d2b00961f228783d711c03a61ea8e203bd0d3c9
+d217eb0d3f36af139424ff4eb1e5c10c50757634
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git reset d217eb0d3f36af139424ff4eb1e5c10c50757634
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git log --graph --pretty=oneline
+*   d217eb0d3f36af139424ff4eb1e5c10c50757634 subtree merge
+|\
+| * 4d2b00961f228783d711c03a61ea8e203bd0d3c9 .3
+| * 30951de30f87a12e0a8bfb2546d9bc62db3b79a2 .2
+| * ee96e997e93aa3029e9b7cf64898c122b1d1abe0 Signed-off-by: conghs <conghs@iesla
+* fd7a33889ea851b01381c33cbd834b90735a9045 2012.1.5
+(END)
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$
+$ git cat-file -p HEAD
+tree a118b5a9f9fe5602f9f50f73baf4ccd53f609c59
+parent fd7a33889ea851b01381c33cbd834b90735a9045
+parent 4d2b00961f228783d711c03a61ea8e203bd0d3c9
+author conghs <conghs@ieslab.com.cn> 1325721971 +0800
+committer conghs <conghs@ieslab.com.cn> 1325721971 +0800
+
+subtree merge
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git cat-file -p a118b5a9f9fe5602f9f50f73baf4ccd53f609c59
+100644 blob 203eb01cf067bcfe2abedf9d472764169e995ed3    Makefile
+040000 tree 1849ec0a334f0615dffb8e39ea48c40b34752d28    lib
+100644 blob f6fb475025bbc1f47f4d73e2b5b00521eb0c675b    version
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ ls
+Makefile  lib/  version
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ make
+ver: 2012.01.05
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git checkout util-branch
+Switched to branch 'util-branch'
+
+Chs@QIDONG-PC /work/MergeTree/main (util-branch)
+$ ls
+Makefile  version
+
+Chs@QIDONG-PC /work/MergeTree/main (util-branch)
+$ git pull
+remote: Counting objects: 5, done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 0), reused 0 (delta 0)
+Unpacking objects: 100% (3/3), done.
+From ../util
+   4d2b009..780f115  master     -> util/master
+Updating 4d2b009..780f115
+Fast-forward
+ version |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+Chs@QIDONG-PC /work/MergeTree/main (util-branch)
+$ git checkout master
+Switched to branch 'master'
+Your branch is ahead of 'origin/master' by 4 commits.
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ ls
+Makefile  lib/  version
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git merge -Xsubtree=lib util-branch
+Merge made by recursive.
+ lib/version |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$ git log --graph --pretty=oneline
+*   f185a076e62fbe46647d4cfcdcb329ff2a700fad Merge branch 'util-branch'
+|\
+| * 780f1154cbd81eecd9d6dbbeabb9da6de257b118 .4
+* |   d217eb0d3f36af139424ff4eb1e5c10c50757634 subtree merge
+|\ \
+| |/
+| * 4d2b00961f228783d711c03a61ea8e203bd0d3c9 .3
+| * 30951de30f87a12e0a8bfb2546d9bc62db3b79a2 .2
+| * ee96e997e93aa3029e9b7cf64898c122b1d1abe0 Signed-off-by: conghs <conghs@iesla
+* fd7a33889ea851b01381c33cbd834b90735a9045 2012.1.5
+
+Chs@QIDONG-PC /work/MergeTree/main (master)
+$
