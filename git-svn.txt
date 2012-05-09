@@ -24,7 +24,6 @@ git svn dcommit
 
 kdebase这篇比较不错:http://techbase.kde.org/Development/Tutorials/Git/git-svn
 
- 
 
 update on 2011-07-21:
 

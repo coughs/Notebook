@@ -26,7 +26,7 @@ Git 系列之三：Windows 下 Git 配置与使用指南
 
 二、配置
 
-1、C:\Program Files\Git\etc\gitconfig 添加：
+1、\msysgit\etc\gitconfig 添加：
 【注意！】请将第二行最后的 “your-id” 修改成你在服务器上的实际 id，默认是姓名拼音。
 
 [alias]
@@ -40,19 +40,40 @@ Git 系列之三：Windows 下 Git 配置与使用指南
 [user]
     email = xxx@gmail.com
     name = 某某某
-2、C:\Program Files\Git\etc\inputrc 修改两行为：
+###############################################    
+#	CHS
+[alias]
+    go = "! bash -c \"git pull && git add .; if [ \\\"$*\\\" == \\\"\\\" ]; then git commit -a; else git commit -am \\\"$*\\\"; fi; git push origin master:your-id;\""
+[core]
+	autocrlf = true
+[gui]
+    encoding = utf-8
+[i18n]
+	logOutputEncoding = gbk
+	commitEncoding = gbk
+[user]
+    email = xxx@gmail.com
+    name = 某某某
 
+2、想要输入中文，我们需要修改下配置文件\msysgit\etc\inputrc 修改两行为：
 set output-meta on
 set convert-meta off
-3、C:\Program Files\Git\etc\git-completion.bash 末尾增加：
 
+3、\msysgit\git\contrib\completion\git-completion.bash 末尾增加：
 alias ls='ls --show-control-chars --color=auto'
-4、C:\Program Files\Git\etc\profile 末尾增加：
 
+4、\msysgit\etc\profile 末尾增加：
 export LESSCHARSET=utf-8
+export HOME=/e/Home
+
+5、复制\msysgit\etc\gitconfig到$HOME
+cp \msysgit\etc\gitconfig $HOME\.gitconfig
+
 【TIP】以上文件最好使用支持 unix 格式的编辑器修改（如 Notepad++、NetBeans），最次也用“写字板”而非“记事本”。
 
 【TIP】若想了解为什么这样设置，请参见：Windows 下 Git 客户端的选择，及 msysGit 各种中文问题的解决
+
+（ps：请避免使用中文名称的文件，虽然通过msysGit的设置可以正常显示中文名文件。）
 
 三、生成密钥
 
@@ -65,7 +86,8 @@ $ ssh-keygen -t rsa
 然后会要求你输入一个密码，将来在使用密钥的时候需要提供这个密码。可以输入，也可以不输入直接回车（无论输入还是不输入，都会要求你确认一次）。
 确认完毕后，程序将生成一对密钥存放在以下文件夹：
 
-C:\Users\Administrator[这里替换成你的用户名]\.ssh
+$HOME\.ssh
+
 密钥分成两个文件，一个私钥（id_rsa）、一个公钥（id_rsa.pub）。
 私钥保存在您的电脑上，公钥交项目负责人添加到服务器上。用户必须拥有与服务器公钥所配对的私钥，才能访问服务器上的代码库。
 
@@ -125,17 +147,17 @@ NBGit 不用说，功能都不完善，还需要自己定制 bat 脚本（若此
 TortoiseGit 从功能上说是完善的，但它只是功能的堆砌而已，使用时完全体会不到 GUI 带来的便利。相反，它让人感觉很繁琐，一个劲地点鼠标，点来点去全是跟菜单打交道，远离了 Git 命令、远离了 Git 输出提示、远离了真相。
 msysGit 的 Bash 非常好用；加上 Git 强大的 alias 功能，我们完全可以自定义一个 $ git go，使得 90% 的情况下只需要这一个命令，即使是不熟悉命令行的 Windows 用户也会觉得很好玩；因为 NBGit、TortoiseGit 都需要 msysGit 做底层，我们直接用底层工具也避免了上层 GUI 带来的额外的 bug。
 需要的配置：
-1、C:\Program Files\Git\etc\git-completion.bash：
+1、\msysgit\etc\git-completion.bash：
 alias ls='ls --show-control-chars --color=auto'
 说明：使得在 Git Bash 中输入 ls 命令，可以正常显示中文文件名。
-2、C:\Program Files\Git\etc\inputrc：
+2、\msysgit\etc\inputrc：
 set output-meta on
 set convert-meta off
 说明：使得在 Git Bash 中可以正常输入中文，比如中文的 commit log。
-3、C:\Program Files\Git\etc\profile：
+3、\msysgit\etc\profile：
 export LESSCHARSET=utf-8
 说明：$ git log 命令不像其它 vcs 一样，n 条 log 从头滚到底，它会恰当地停在第一页，按 space 键再往后翻页。这是通过将 log 送给 less 处理实现的。以上即是设置 less 的字符编码，使得 $ git log 可以正常显示中文。其实，它的值不一定要设置为 utf-8，比如 latin1 也可以……。还有个办法是 $ git –no-pager log，在选项里禁止分页，则无需设置上面的选项。
-4、C:\Program Files\Git\etc\gitconfig：
+4、\msysgit\etc\gitconfig：
 [alias]
 go = “! bash -c \”git pull && git add .; if [ \\\"$*\\\" == \\\"\\\" ]; then git commit -a; else git commit -am \\\”$*\\\”; fi; git push origin master:your-id;\”"
 说明：强大的 alias，有了这个，我们 90% 的情况下只需要输入 $ git go 这一个命令，免去了先拉后提交再推的繁琐步骤。

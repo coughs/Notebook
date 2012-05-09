@@ -1,3 +1,15 @@
+# subtree
+
+Git subtree notes and workflows
+Posted on February 21, 2011 by sumwai
+http://www.tipstank.com/2011/02/21/git-subtree-notes-and-workflows/
+
+Sharing code between projects with git subtree
+http://psionides.eu/2010/02/04/sharing-code-between-projects-with-git-subtree/
+
+
+# merge-tree
+
 $ cd ../main
 
 Chs@QIDONG-PC /work/MergeTree/main (master)
