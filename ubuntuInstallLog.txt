@@ -1,0 +1,51 @@
+
+//ubuntu现在未配置jdk的安装，通过如下命令，可以安装jdk6：
+
+sudo apt-add-repository ppa:flexiondotorg/java
+sudo apt-get update
+sudo apt-get install sun-java6-jre sun-java6-plugin
+sudo apt-get install sun-java6-jdk
+
+
+Hudson自动安装Maven3后，hudson可以正常工作。
+
+git svn mirror gitosis
+
+http://mushiengine.tumblr.com/post/576074985/more-svn-to-git-gitosis-tips
+git push —mirror gitosis@<gitosis servername>:<gitosis manage git repo>.git (the key here is the —mirror)
+
+wordwrap
+http://ahtik.com/eclipse-update/
+
+
+
+mkdir myproject
+cd myproject
+
+# git svn的临时库服务器
+git svn init http://ies600.ieslab.com.cn/svn/idp600.dev/branches/ShanDong/idp600.java
+git svn fetch -r xxxxx
+以上两步也可以并成一步, 就是
+$git svn clone http://xxxx myproject
+
+# gitosis的服务器上
+mkdir ixp.java.git
+cd ixp.java.git
+git init --bare
+# git svn的临时库服务器，镜像推送到gitosis的服务器上
+git push —mirror gitosis@172.20.7.191:ixp.java.git
+
+# gitosis客户端（hudson）
+mkdir myproject
+git clone git@172.20.7.191:ixp.java.git
+
+cd myproject
+cp ../mvn-git-test/hellotest/pom.xml
+git add pom.xml
+git commit
+git push
+
+# git svn的临时库服务器
+git pull git@172.20.7.191:ixp.java.git
+git svn dcommit
+
