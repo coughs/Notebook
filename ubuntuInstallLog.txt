@@ -6,6 +6,45 @@ sudo apt-get update
 sudo apt-get install sun-java6-jre sun-java6-plugin
 sudo apt-get install sun-java6-jdk
 
+#################################
+####ixp1000库的初始化
+# git svn在ubuntu上的中间库（git用户，gitsvn目录下）
+mkdir ixp1000.dev
+cd ixp1000.dev/
+git svn init http://172.20.2.2/svn/idp600.dev/trunk/ShanDong/SystemEnv/idp600.dev
+git svn fetch -r 2365
+# gitosis服务器的
+mkdir ixp1000.dev.git
+cd ixp1000.dev.git
+git init --bare
+# git svn在ubuntu上的中间库，镜像推送到gitosis的服务器上
+git push --mirror git@172.20.7.191:ixp1000.dev.git
+
+####gitosis客户端修改，直到提交到SVN
+# gitosis客户端（hudson）
+mkdir ixp1000.dev
+git clone git@172.20.7.191:ixp1000.dev.git
+cd ixp1000.dev
+#客户端做修改，提交
+cp ../mvn-git-test/hellotest/pom.xml
+git add pom.xml
+git commit
+#push到gitosis
+git push
+
+# git svn在ubuntu上的中间库，pull，然后提交到svn中
+git pull git@172.20.7.191:ixp1000.dev.git
+git svn dcommit
+
+####SVN客户端修改，直到gitosis取得更改
+#SVN客户端修改，并提交
+# git svn在ubuntu上的中间库，提取更新，并推送到gitosis的服务器上
+git svn rebase
+git push --mirror git@172.20.7.191:ixp1000.dev.git
+# gitosis客户端（）
+pull
+
+#################################
 
 Hudson自动安装Maven3后，hudson可以正常工作。
 
