@@ -44,6 +44,19 @@ git push --mirror git@172.20.7.191:ixp1000.dev.git
 # gitosis客户端（）
 pull
 
+####gitosis客户端再次修改，提交到SVN时，发生冲突
+# gitosis客户端（）
+#客户端做修改，提交
+#push到gitosis
+git push
+
+# git svn在ubuntu上的中间库，pull，然后提交到svn中；此时需要rebase，
+# 可能是由于上一个阶段中的push --mirror导致的
+git pull git@172.20.7.191:ixp1000.dev.git
+git svn rebase
+git svn dcommit
+
+
 #################################
 
 Hudson自动安装Maven3后，hudson可以正常工作。
