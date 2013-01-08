@@ -240,3 +240,14 @@ vino-preferences
 
 在ubuntu中添加新硬盘
 http://www.cnblogs.com/unipower/archive/2009/03/08/1406230.html
+
+在ubuntu中手动释放缓存
+http://blog.sina.com.cn/s/blog_72057964010109tn.html
+cat /proc/sys/vm/drop_caches
+[root@server test]# sync
+[root@server test]# echo 3 > /proc/sys/vm/drop_caches
+[root@server test]# cat /proc/sys/vm/drop_caches
+查看内存的命令：
+vmstat 1
+free -m
+
