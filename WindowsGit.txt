@@ -183,3 +183,8 @@ commitencoding = GB2312
 3、$ git checkout 有时候需要修改/增删很多文件，如果某些文件被占用，会被 Windows 拒绝，导致失败，甚至可能造成版本库出现无法修复的问题。
 这 3 个都是可承受的问题，前两个应该有办法解决；第 3 个归功于文件系统，只能尽量避免 checkout，实在需要的时候先注销一次，就不会有问题了。
 【TIP】该文只是解释说明，具体操作请按《Windows 下 git 配置与使用指南》Wiki 执行。
+
+cygwin 下建立用gitosis建立git中心服务器
+http://blog.sina.com.cn/s/blog_4b1816550100k2dp.html
+git clone git@your-server:gitosis-admin.git
+
