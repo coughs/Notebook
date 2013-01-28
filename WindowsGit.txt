@@ -188,3 +188,19 @@ cygwin 下建立用gitosis建立git中心服务器
 http://blog.sina.com.cn/s/blog_4b1816550100k2dp.html
 git clone git@your-server:gitosis-admin.git
 
+Win 7下安装 Gitosis (Windows下的 git 服务器) Cygwin .
+http://blog.csdn.net/breeze_life/article/details/7466348
+
+•devel 分类下的 git
+•net 分类下的 openssh
+•Python 分类下的 python（这里顺便记录一下python的版本号，后面会用到，如2.6.8-2）
+
+git@WIN-53248O5TJ07 ~
+$ gitosis-init < /tmp/id_rsa.pub
+
+遇到如下问题，安装 上述 Python下的 python-setuptools。
+Traceback (most recent call last):
+  File "/usr/bin/gitosis-init", line 5, in <module>
+    from pkg_resources import load_entry_point
+ImportError: No module named pkg_resources
+
