@@ -1,0 +1,5 @@
+Ctrl+Shif+r
+查找 文件名
+
+alt+s
+文件查找
