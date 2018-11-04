@@ -1,0 +1,5 @@
+
+#允许esx上的虚拟机运行workstations虚拟机的配置项
+vhv.enable = "TRUE"
+
+
