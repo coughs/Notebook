@@ -1,0 +1,390 @@
+    ubuntu上配置git服务器
+
+这几天来一直在折腾git版本管理服务器，感觉有点头大，一会儿权限不够，一会儿加密文件与用户名不匹配……
+但功夫不负有心人今天下午总是有所成效，把这些天来我所遇到和所范错误作一个记录，给大家一个参考！
+今天重新把日志修改了一下，主要解决了gitweb显示问题，与新加入的成员无法clone git仓库的问题！
+1       需求
+
+硬件需求：一台Ubuntu或者debian电脑（虚拟机），能通过网络访问到。
+软件需求：git-core, gitosis, openssh-server, openssh-client
+2       安装配置git服务器
+
+安装git和openssh：
+a@server:~$ sudo apt-get install git-core openssh-server openssh-client
+新加用户git， 该用户将作为所有代码仓库和用户权限的管理者：
+a@server:~$ sudo useradd -m git
+a@server:~$ sudo passwd git
+建立一个git仓库的存储点：
+a@server:~$ sudo mkdir /home/repo
+让除了git以外的用户对此目录无任何权限：
+a@server:~$ sudo chown git:git /home/repo
+a@server:~$ sudo chmod 755 /home/repo   注：此处要把git仓库repo的属性设置成755，不然在gitweb中一直无法找到工程
+3       安装配置gitosis
+
+初始化一下服务器的git用户，这一步其实是为了安装gitosis做准备。在任何一 台机器上使用git，第一次必须要初始化一下：
+git config --global user.name "ixp"
+git config --global user.email "ixp@ieslab.com.cn"
+安装一下python的setup tool， 这个也是为了gitosis做准备：
+a@server:~$ sudo apt-get install python-setuptools
+获得gitosis包：
+a@server:~$ cd /tmp
+a@server:/tmp$ git clone git://eagain.net/gitosis.git
+a@server:/tmp$ cd gitosis
+a@server:/tmp/gitosis$ sudo python setup.py install
+切换到git用户下：
+a@server:/tmp/gitosis$ su git
+默认状态下，gitosis会将git仓库放在 git用户的home下，所以我们做一个链接到/home/repo
+$ ln -s /home/repo /home/git/repositories
+再次返回到默认用户
+$ exit
+如果你将作为git服务器的管理员，那么在你的电 脑上(另一台pc）生成ssh公钥：
+usr@pc1:~$ ssh-keygen -t rsa
+将公钥拷贝到服务器的/tmp下：
+usr@pc1:~$ scp .ssh/id_rsa.pub git@<server>:/tmp
+回到git服务器上
+a@server:/tmp/gitosis$ sudo chmod a+r /tmp/id_rsa.pub
+让gitosis运行起来：
+a@server:/tmp/gitosis$ sudo -H -u git gitosis-init < /tmp/id_rsa.pub
+Initialized empty Git repository in /home/repo/gitosis-admin.git/
+Reinitialized existing Git repository in /home/repo/gitosis-admin.git/
+gitosis的有趣之处在于，它通过一个git仓库来管理配置文件，仓库就放在了/home/repo/gitosis- admin.git。我们需要为一个文件加上可执行权限：
+a@server:/home/git$ sudo passwd root
+a@server:/home/git$ su
+root@server:/home/git# cd repositories
+root@server:/home/git/repositories# cd gitosis-admin.git/
+root@server:/home/git/repositories/gitosis-admin.git# sudo chmod 755 /home/repo/gitosis-admin.git/hooks/post-update
+root@server:/home/git/repositories/gitosis-admin.git# exit
+4       在服务器上新建一个测试项目仓库
+
+我们在服务器上新建一个空的项目仓库，叫“teamwork”。
+切换到git用户：
+a@server:/home/git$ su – git
+$ cd /home/repo
+$ mkdir teamwork.git
+$ cd teamwork.git
+$ git init --bare      注：这是在服务器上运行的，是为了初始化一个根级的git仓库
+$ exit
+但是，到目前为止，这只是一个空仓库，空仓库是不能clone下来的。为了能做clone，我们必须先让某个有权限的人放一个初始化的版本到仓库中。
+所以，我们必须先修改一下gitosis-admin.
+5       管理gitosis的配置文件
+
+刚刚提到，gitosis本身的配置也是通过git来实现的。在你自己的开发机里，把gitosis-admin.git这个仓库clone下来，就可以以管理员的身份修改配置了。
+在你的电脑里：
+usr@pc1:~/work$ git clone git@<server>:gitosis-admin.git
+usr@pc1:~/work$ cd gitosis-admin/
+该目录下的keydir目录是用来存放所有需要访问git服务器的用户的ssh公钥：
+各个用户按照前面提到的办法生成各自的ssh公钥文件后，把所有人的 ssh公钥文件都拿来，按名字命名一下，比如b.pub, lz.pub等，统统拷贝到keydir下：
+usr@pc1:~/work/gitosis-admin$ su root
+root@pc1:/home/a/work/gitosis-admin# cp /path/to/.ssh/id_rsa.pub ./keydir/b.pub
+root@pc1:/home/a/work/gitosis-admin# exit
+修改gitosis.conf文件，我的配置大致如下：
+[gitosis]
+[group gitosis-admin]
+writable = gitosis-admin
+members = a@server usr@pc1
+[group hello]
+writable = teamwork
+members = a@server b
+[group hello_ro]
+readonly = teamwork
+members = lz
+这个配置文件表达了如下含义：gitosis-admin组成员有a, usr，该组对gitosis-admin仓库有读写权限；
+team组有a，b两个成员，该组对teamwork仓库有读写权限；
+team_ro组有lz一个成员，对teamwork仓库有只读权限。
+当然目前这些配置文件的修改只是在你的本地，你必须推送到远程的gitserver上才能真正生效。
+加入新文件、提交并push到git服务器：
+usr@pc1:~/work/gitosis-admin$ git add .
+usr@pc1:~/work/gitosis-admin$ git commit -am “add teamweok prj and users”
+usr@pc1:~/work/gitosis-admin$ git push origin master
+6       初始化测试项目
+
+好了，现在服务器就搭建完了，并且有一个空的项目teamwork在服务器上。接下来呢？当然是测试一下，空仓库是不能clone的，所以需要某一个有写权限的人初始 化一个版本。就我来做吧，以下是在客户端完成。
+usr@pc1:~/work$ mkdir teamwork-ori
+usr@pc1:~/work$ cd teamwork-ori/
+usr@pc1:~/work/teamwork-ori$ git init           注：这是在用户端的PC上执行的，为的是初始化一个本地的版本库
+usr@pc1:~/work/teamwork-ori$ echo “/*add something*/” > hello
+usr@pc1:~/work/teamwork-ori$ git add .
+usr@pc1:~/work/teamwork-ori$ git commit -am “initial version”
+usr@pc1:~/work/teamwork-ori$ git remote add origin git@<server>:teamwork.git
+usr@pc1:~/work/teamwork-ori$ git push origin master
+到此为止teamwork已经有了一个版本了，team的其他成员只要先clone一下 teamwork仓库，就可以任意玩了。
+usr@pc1:~/work/teamwork-ori$ su b
+$ cd /home/b
+$ git clone git@<server>:teamwork.git
+$ cd teamwork
+$ vim hello
+$ git add .
+$ git commit -am “b add”
+$ git push origin master
+$ exit
+7       添加已有git项目
+
+另外：如果你有一个现成的git仓库，想放到 gitserver上供team使用（比如你clone了一个官方的kernel仓库，想在内部使用它作为基础仓库），怎么办呢。
+首先需要从你的工作仓库中得到一个纯仓库, 比如你的工作目录为~/kernel, 你想导出纯仓库到你的优盘里，然后拷贝到gitserver上去。
+$ git clone –bare ~/kernel /media/udisk
+然后就拿着优盘，交给gitserver的管理员，让他拷贝到/home/repo/下，同时需要配置 gitosis相关配置文件哦，这个就不用再说了吧。比如：下载ALSA库：
+git clone git://android.git.kernel.org/platform/external/alsa-lib.git
+git clone git://android.git.kernel.org/platform/external/alsa-utils.git
+生成bare库
+git clone –bare alsa-lib alsa-lib.git
+git clone –bare alsa-utils alsa-utils.git
+将bare 库移动到git服务器目录
+cp alsa-lib.git /home/repo
+注意变更所有者，以获取提交权限。
+chown -R git alsa-lib.git
+然后就O 了，呵呵.
+8       创建gitweb
+
+sudo apt-get install gitweb
+8.1 配置 gitweb
+
+默认没有 css 加载，把 gitweb 要用的静态文件连接到 DocumentRoot 下：
+cd /var/www/
+sudo ln -s /usr/share/gitweb/* .
+8.2 修改配置
+
+sudo vi /etc/gitweb.conf
+将 $projectroot 改为git仓库存储目录(例如：/home/git/repositories)，保存后刷新浏览器。
+如果没有找到项目，你需要将$projectroot/*.git 的属性改为755，让apache用户有可读权限。可以只改你需要让别人通过web访问的那个git。http://localhost/cgi-bin/gitweb.cgi
+8.3 修改/etc/gitweb.conf 内容
+
+# path to git projects (<project>.git)
+#$projectroot = "/var/cache/git";
+$projectroot = "/home/git/repositories";
+# directory to use for temp files
+$git_temp = "/tmp";
+# target of the home link on top of all pages
+$home_link = $my_uri || "/";
+# html text to include at home page
+$home_text = "indextext.html";
+# file with project list; by default, simply scan the projectroot dir.
+$projects_list = $projectroot;
+# stylesheet to use
+@stylesheets = ("/gitweb/static/gitweb.css");
+# javascript code for gitweb
+$javascript = "gitweb/static/gitweb.js";
+# logo to use
+$logo = "/gitweb/static/git-logo.png";
+# the 'favicon'
+$favicon = "/gitweb/static/git-favicon.png";
+# git-diff-tree(1) options to use for generated patches
+#@diff_opts = ("-M");
+@diff_opts = ();
+8.4 配置apache2
+
+ubuntu中默认的web目录是/var/www，默认的cgi目录是 /usr/lib/cgi-bin/,安装完成gitweb后，gitweb的gitweb.cgi会自动放置到该目录下。
+如果你的cgi路径不是默认的/usr/lib/cgi-bin/，需要将gitweb安装在/usr/lib/cgi-bin中的gitweb.cgi复制到原来配置的cgi-bin路径，并在apache的配置文件/etc/apache2/apache.conf末尾加上以下内容：
+SetEnv  GITWEB_CONFIG   /etc/gitweb.conf
+<Directory "/srv/www/cgi-bin/gitweb">          
+     Options FollowSymlinks ExecCGI         
+     Allow from all                          
+     AllowOverride all                      
+     Order allow,deny                       
+     <Files gitweb.cgi>
+          SetHandler cgi-script
+     </Files>                   
+     RewriteEngine on
+     RewriteCond %{REQUEST_FILENAME} !-f
+     RewriteCond %{REQUEST_FILENAME} !-d
+     RewriteRule ^.* /gitweb.cgi/$0 [L,PT]
+</Directory>
+8.5 重新启动apache
+
+sudo /etc/init.d/apache2 restart
+访问http://localhost/cgi-bin/gitweb.cgi 
+说明一点：如果其它新加入的成员无法clone一个git仓库时，如出现如下错误提示：
+ERROR:gitosis.serve.main:Repository read access denied 
+原因是当前成员的key命名与在gitosis.conf中的members中的名字不一致！例如所用的key名是 lxq_rsa.pub，而在gitosis.conf中某一group下所用的名称为 lxq@ubuntu
+则只需要把lxq_rsa.pub重命名为lxq@ubuntu.pub并重新push到服务器上即可！
+最后奉上一个git学习网站，中文的哦 ^_^http://progit.org/book/zh/index.html
+
+
+
+
+
+Ubuntu与Window下git的配置（Ubuntu服务器 /Windows客户端）
+
+1.首先搭建Ubuntu服务器
+
+1.1 前提
+
+    1.1.1 Ubuntu服务器端（Ubuntu 10）的用户：
+
+        (1) root@server：服务器超级管理员用户
+
+        (2) a@server：服务器管理员用户
+
+        (3) git@server:git所有代码仓库和用户权限的管理者
+
+          创建方法：
+
+                       添加用户： a@server:/home$sudo useradd -m git
+
+                             设置密码： a@server:/homesudo passwd git
+
+ 
+
+ 
+
+1.2 服务器端安转配置git（用户：a@server）
+
+   a@server:/home$sudo apt-get install git-core openssh-server openssh-client
+
+ 
+
+1.3 服务器端安装 gitosis （用户：a@server）
+
+　　a@server:/home$sudo apt-get install python-setuptools
+
+　　a@server:/home$git clone git://eagain.net/gitosis.git
+
+　　a@server:/home$cd gitosis
+
+　　a@server:/home$python setup.py install
+
+ 
+
+1.4 将a@server设定为git服务器配置管理员（就是拥有对gitosis-admin.git的管理权限 ）（ 用户：a@server ）
+
+     1.4.1 生成密钥
+
+     a@server:/home$ssh-keygen -t rsa
+
+     1.4.2 拷贝公钥到服务器上（此步是为配置管理员在其他机器上，对于此实例不需要）
+
+       (1) scp .ssh/id_rsa.pub git@<server>:/tmp
+
+       (2) 或者通过手动拷贝到服务器上
+
+     1.4.3 更改公钥权限
+
+       sudo chmod a+r /tmp/id_rsa.pub
+
+ 
+
+1.5 运行gitosis （ 用户：a@server ）
+
+      a@server:/home/git$sudo -H -u git gitosis-init < /tmp/id_rsa.pub
+
+      运行结果：
+
+      Initialized empty Git repository in /home/git/gitosis-admin.git/
+      Reinitialized existing Git repository in /home/git/gitosis-admin.git/
+
+ 
+
+1.6 配置管理gitosis文件权限（ 用户：a@server ）
+
+gitosis本身也是通过一个git仓库来管理配置文件，仓库就放在了/home/git/gitosis- admin.git。
+a@server:/home/git$ sudo passwd root
+a@server:/home/git$ su
+root@server:/home/git$chmod 755 /home/git/repositories/gitosis-admin.git/hooks/post-update
+
+root@server:/home/git$exit
+
+ 
+
+1.7 在服务器上创建测试项目仓库(用户：git@server )
+
+a@s erver:/home/git$ su - git
+$ cd /home/git
+$ mkdir test.git
+$ cd test.git
+$ git init --bare
+$ exit
+
+ 
+
+1.8 管理gitosis的配置文件（ 用户：a@server ）
+
+a@server:/home$sudo git clone git@<server> /home/git/repositories/gitosis-admin.git 
+
+a@server:/home$cd gitosis-admin/
+目录keydir目录是用来存放所有需要访问git服务器的用户的ssh公钥：
+各个用户按照前面提到的办法生成各自的ssh公钥文件后，按名字命名一下，比如b.pub等，统统拷贝到keydir下：
+a@server:/home/gitosis-admin$ su root
+a@server:/home/gitosis-admin$ cp /tmp/b.pub ./keydir/b.pub
+root@server :/home/gitosis-admin $ exit 
+
+ 
+
+1.9 修改gitosis.conf文件，配置如下：（ 用户：a@server ） 
+    [gitosis]
+    [group gitosis-admin]
+    writable = gitosis-admin
+    members = a@server 
+    [group team1]
+    writable = test
+    members = a@server b
+
+配置文件表达了如下含义：gitosis-admin组成员有a, usr，该组对gitosis-admin仓库有读写权限；
+team1组有a@server，b两个成员，该组对test仓库有读写权限；
+
+当然目前这些配置文件的修改只是在你的本地，你必须推送到远程的gitserver上才能真正生效。
+加入新文件、提交并push到git服务器：
+a@server:/home/gitosis-admin $ git add .
+a@server:/home/gitosis-admin $ git commit -am “add test prj and users”
+a@server:/home/gitosis-admin $ git push origin master
+
+1.10 初始化测试项目（ 用户：a@server ） 
+好了，现在服务器就搭建完了，并且有一个空的项目teamwork在服务器上。
+
+空仓库是不能clone的，所以需要某一个有写权限的人初始 化一个版本。
+a@server:/home$ mkdir test
+a@server:/home$ cd test
+a@server:/home/test$ git init
+a@server:/home/test$ echo "/*add something*/" > hello
+a@server:/home/test$ git add .
+a@server:/home/test$ git commit -am “initial version”
+a@server:/home/test$ git remote add origin git@<server>:/home/git/test.git
+a@server:/home/test$ git push origin master
+
+ 
+
+1.11 到其他机器上，测试使用，如：b
+
+到此为止test已经有了一个版本了，team1的其他成员只要先clone一下 test仓库，就可以任意玩了。
+b@server:/home$  git clone git@<server>:/home/git/test.git
+b@server:/home$  cd test
+b@server:/home$  vim hello
+b@server:/home$  git add .
+b@server:/home$  git commit -am "b add"
+b@server:/home$  git push origin master
+b@server:/home$  exit  
+
+ 
+
+2. Windows上使用git
+
+   2.1 安装msysGit
+
+   2.2 生成密钥，如1.4.1
+
+   2.3 添加 gitosis的配置文件中，如1.8，1.9所示
+
+   2.4 测试如1.11
+
+ 
+
+3.服务器端配置git Web
+
+3.1. 安装gitweb  
+   sudo apt-get install gitweb
+
+3. 2. 安装apache2 
+  sudo apt-get install apache2
+
+3. 3. 配置gitweb 
+   3.3.1 默认没有 css 加载，把 gitweb 要用的静态文件连接到 DocumentRoot 下：
+     cd /var/ www/
+     sudo ln -s / usr/ share/ gitweb/* .  (注意：后面的点) 
+   
+   3.3.2 修改配置：
+     sudo vi /etc/ gitweb.conf
+     将 $projectroot 改为gitosis-admin.git所在目录： /home/git/repositories
+
+   3.3.3 修改 /home/git/repositories权限，默认情况下，gitosis将 repositories权限设置为不可读的
+    sudo chmod 777 -R /home/git/repositories 
+
+    
+    

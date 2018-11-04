@@ -1,0 +1,253 @@
+
+//ubuntu现在未配置jdk的安装，通过如下命令，可以安装jdk6：
+
+sudo apt-add-repository ppa:flexiondotorg/java
+sudo apt-get update
+sudo apt-get install sun-java6-jre sun-java6-plugin
+sudo apt-get install sun-java6-jdk
+
+#################################
+####ixp1000库的初始化
+# git svn在ubuntu上的中间库（git用户，gitsvn目录下）
+mkdir ixp1000.dev
+cd ixp1000.dev/
+git svn init http://172.20.2.2/svn/idp600.dev/trunk/ShanDong/SystemEnv/idp600.dev
+git svn fetch -r 2365
+# gitosis服务器的
+mkdir ixp1000.dev.git
+cd ixp1000.dev.git
+git init --bare
+# git svn在ubuntu上的中间库，镜像推送到gitosis的服务器上
+git push --mirror git@172.20.7.191:ixp1000.dev.git
+
+####gitosis客户端修改，直到提交到SVN
+# gitosis客户端（hudson）
+mkdir ixp1000.dev
+git clone git@172.20.7.191:ixp1000.dev.git
+cd ixp1000.dev
+#客户端做修改，提交
+cp ../mvn-git-test/hellotest/pom.xml
+git add pom.xml
+git commit
+#push到gitosis
+git push
+
+# git svn在ubuntu上的中间库，pull，然后提交到svn中
+git pull git@172.20.7.191:ixp1000.dev.git
+git svn dcommit
+
+####SVN客户端修改，直到gitosis取得更改
+#SVN客户端修改，并提交
+# git svn在ubuntu上的中间库，提取更新，并推送到gitosis的服务器上
+git svn rebase
+git push --mirror git@172.20.7.191:ixp1000.dev.git
+# gitosis客户端（）
+pull
+
+####gitosis客户端再次修改，提交到SVN时，发生冲突
+# gitosis客户端（）
+#客户端做修改，提交
+#push到gitosis
+git push
+
+# git svn在ubuntu上的中间库，pull，然后提交到svn中；此时需要rebase，
+# 可能是由于上一个阶段中的push --mirror导致的
+git pull git@172.20.7.191:ixp1000.dev.git
+git svn rebase
+git svn dcommit
+
+
+#################################
+
+Hudson自动安装Maven3后，hudson可以正常工作。
+
+git svn mirror gitosis
+
+http://mushiengine.tumblr.com/post/576074985/more-svn-to-git-gitosis-tips
+git push —mirror gitosis@<gitosis servername>:<gitosis manage git repo>.git (the key here is the —mirror)
+
+wordwrap
+http://ahtik.com/eclipse-update/
+
+
+
+# git svn的临时库服务器
+mkdir myproject
+cd myproject
+
+git svn init http://ies600.ieslab.com.cn/svn/idp600.dev/branches/ShanDong/idp600.java
+git svn fetch -r xxxxx
+以上两步也可以并成一步, 就是
+$git svn clone http://xxxx myproject
+
+# gitosis的服务器上
+mkdir ixp.java.git
+cd ixp.java.git
+git init --bare
+# git svn的临时库服务器，镜像推送到gitosis的服务器上
+git push —mirror gitosis@172.20.7.191:ixp.java.git
+
+# gitosis客户端（hudson）
+mkdir myproject
+git clone git@172.20.7.191:ixp.java.git
+
+cd myproject
+cp ../mvn-git-test/hellotest/pom.xml
+git add pom.xml
+git commit
+git push
+
+# git svn的临时库服务器
+git pull git@172.20.7.191:ixp.java.git
+git svn dcommit
+
+# maven入门
+http://maven.apache.org/guides/getting-started/index.html
+# 5分钟maven
+http://hideto.iteye.com/blog/59159
+# Maven 调用 Ant 命令
+http://hi.baidu.com/yafengyouxia/blog/item/44dfb1a19c22ac8146106479.html
+# Maven 调用 ant进行编译！！ 
+http://blog.csdn.net/zhouysh/article/details/5713532
+# maven常见问题问答
+http://www.cnblogs.com/BigTall/archive/2011/03/23/1993253.html
+# maven 设置 tools.jar
+http://docs.codehaus.org/display/MAVENUSER/Running+ant+tasks+that+use+the+JDK
+
+# 解决冲突
+http://stackoverflow.com/questions/161813/how-do-i-fix-merge-conflicts-in-git
+
+git config --global user.email "git@ieslab.com.cn"
+git config --global user.name "git@ieslab"
+# merge
+git pull git@172.20.7.191:ixp1000.java.git
+git mergetool
+git checkout --theirs pom.xml
+git commit -m "using theirs"
+git pull git@172.20.7.191:ixp1000.java.git
+git push git@172.20.7.191:ixp1000.java.git
+git svn dcommit
+git svn fetch
+
+安装nexus服务器
+ubuntu server上安装maven repository manager nexus 
+http://jgyhuzhou.iteye.com/blog/339621
+
+执行java程序
+http://mojo.codehaus.org/exec-maven-plugin/examples/example-exec-using-plugin-dependencies.html
+
+oracle安装：
+https://forums.oracle.com/forums/thread.jspa?threadID=2301639
+解决分区以及内存等问题。
+
+在安装用户环境中执行 
+export LC_ALL=C # for bash and ksh 
+setevn LC_ALL C # for Csh 
+然后再执行安装命令
+
+1、解压后运行后 ./runInstaller  提示系统不支持 
+如下：
+检查操作系统版本: 必须是redhat-3, SuSE-9, redhat-4, UnitedLinux-1.0, asianux-1 or asianux-2
+                                      未通过 <<<<
+解决办法：sudo vi /etc/redhat-release 
+内容：entOS release 4.4 (Final)  保存退去就可以了
+
+http://www.oklinux.cn/html/sql/other/20081012/62063.html
+3) 创建用户名和组名
+
+注意，标准安装手册遗漏了dba用户组
+
+括号内为说明，#为终端提示符
+
+# /usr/sbin/groupadd oinstall
+# /usr/sbin/groupadd dba
+# /usr/sbin/useradd -m -g oinstall -G dba oracle
+# id oracle ( 检查用户名)
+# passwd oracle （设置Oracle用户的密码）
+
+4) 创建目录
+
+# mkdir -p /u01/app/oracle
+# chown -R oracle:oinstall /u01/app/oracle 
+# chmod -R 775 /u01/app/oracle
+
+/u01/app/oracle为Oracle根目录，可以根据需要改成别的名字，如果不是很熟练，按照步骤照做就不会出错。
+
+5) 用oracle用户登录终端
+
+#su - oracle
+#vi .bash_profile
+
+编译安装ACE：
+mkdir build
+cd build
+root@chs-vm-ub1110-1:/media/oracle_/ace/ace6.0.1/build# ../configure --enable-debug=no --enable-ssl=no
+make
+
+设置终端的编码
+http://askubuntu.com/questions/87227/switch-encoding-of-terminal-with-a-command
+"Terminal"->"Set Character Encoding..."->"Western (ISO-8859-1)"
+http://hi.baidu.com/huaerzaikai/blog/item/8cc478b5c227b1c237d3cabd.html
+sudo apt-get install zhcon
+
+Installing Webmin 1.570 on Ubuntu Server 11.04
+http://secretengineer.com/?p=788
+
+ubuntu server升级，老忘，还是在这记一下吧
+http://hi.baidu.com/oklqh/blog/item/2c3afd247694b80a4c088d47.html
+
+sudo apt-get install xrdp
+http://www.liberiangeek.net/2011/06/connect-to-ubuntu-11-04-from-windows-via-remote-desktop/
+
+VBoxHeadless - Running Virtual Machines With VirtualBox 4.1 On A Headless Ubuntu 11.10 Server
+http://www.howtoforge.com/vboxheadless-running-virtual-machines-with-virtualbox-4.1-on-a-headless-ubuntu-11.10-server
+
+sudo /etc/init.d/networking restart
+
+输入法
+Input
+im-switch -s ibus
+fcitx
+双拼方案：/usr/share/fcitx/pinyin/sp.dat
+
+磁盘实用工具
+disk utility
+palimpsest
+
+hosts
+203.208.46.146 www.google.com
+203.208.46.147 www.google.com.hk
+203.208.46.132 clients1.google.com
+203.208.46.146 m.google.com
+203.208.46.149 mail.google.com
+203.208.46.149 smtp.google.com
+203.208.46.149 imap.google.com
+203.208.46.149 pop.google.com
+203.208.46.161 chatenabled.mail.google.com
+203.208.46.161 mail-attachment.googleusercontent.com
+203.208.46.146 id.google.com
+203.208.46.146 encrypted.google.com
+203.208.46.161 encrypted-tbn0.google.com
+203.208.46.162 encrypted-tbn1.google.com
+203.208.46.163 encrypted-tbn2.google.com
+203.208.46.164 encrypted-tbn3.google.com
+203.208.46.132 webcache.googleusercontent.com
+
+远程桌面查看器
+vinagre
+桌面共享
+vino-preferences
+
+在ubuntu中添加新硬盘
+http://www.cnblogs.com/unipower/archive/2009/03/08/1406230.html
+
+在ubuntu中手动释放缓存
+http://blog.sina.com.cn/s/blog_72057964010109tn.html
+cat /proc/sys/vm/drop_caches
+[root@server test]# sync
+[root@server test]# echo 3 > /proc/sys/vm/drop_caches
+[root@server test]# cat /proc/sys/vm/drop_caches
+查看内存的命令：
+vmstat 1
+free -m
+
