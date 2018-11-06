@@ -1,0 +1,11 @@
+F12+F1
+Disable cache(while devTools is open)
+不开启缓存
+
+
+Ctrl+shift+N
+开发者无痕模式
+
+Ctrl+Shift+Del
+清缓存
+
