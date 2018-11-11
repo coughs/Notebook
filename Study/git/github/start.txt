@@ -1,0 +1,36 @@
+Quick setup — if you’ve done this kind of thing before
+or	
+HTTPS
+SSH
+
+https://github.com/coughs/ProjectStudy.git
+We recommend every repository include a README, LICENSE, and .gitignore.
+
+…or create a new repository on the command line
+
+echo "# ProjectStudy" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/coughs/ProjectStudy.git
+git push -u origin master
+
+…or push an existing repository from the command line
+
+git remote add origin https://github.com/coughs/ProjectStudy.git
+git push -u origin master
+
+…or import code from another repository
+
+You can initialize this repository with code from a Subversion, Mercurial, or TFS project.
+
+
+https://blog.csdn.net/p10010/article/details/51336332
+GitHub的注册与使用（详细图解）
+2016年05月09日 15:31:04 传a奇 阅读数：45081更多
+个人分类： git
+首先,你需要注册一个 github账号,最好取一个有意义的名字，比如姓名全拼，昵称全拼，如果被占用，可以加上有意义的数字.
+本文中假设用户名为 chuaaqiCSDN(我的博客名的全拼)
+一、gihub账号注册与仓库创建
+二、本地仓库上传到github仓库
+

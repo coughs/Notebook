@@ -1,0 +1,5 @@
+
+// 由 svn 初始化
+git svn clone http://powergrid.ieslab.com.cn/svn/*/trunk/project --username= -r 1000
+git svn fetch
+

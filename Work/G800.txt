@@ -1,0 +1,8 @@
+2018/1/29 增加质量码解析 
+svg.jsp-61-refresh
+
+
+后台服务方式运行
+--daemon
+rtbus --daemon
+
