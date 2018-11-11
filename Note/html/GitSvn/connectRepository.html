@@ -1,0 +1,345 @@
+
+<!DOCTYPE html>
+
+
+    <html itemscope itemtype="http://schema.org/QAPage" class="html__responsive">
+
+    
+        <body class="question-page unified-theme new-topbar">
+    <div id="notify-container"></div>
+                <div id="question-header" class="grid">
+                    <h1 itemprop="name" class="grid--cell fs-headline1 fl1"><a href="/questions/13646281/unable-to-connect-to-a-repository-at-url-svn-localhost" class="question-hyperlink">Unable to connect to a repository at URL &#39;svn://localhost&#39;</a></h1>
+
+            
+
+
+
+<div class="pl8 aside-cta grid--cell" role="navigation" aria-label="ask new question">
+            <a href="/questions/ask" class="d-inline-flex ai-center ws-nowrap s-btn s-btn__primary">Ask Question</a>
+</div>
+
+        </div>
+            
+
+            
+
+<div class="question" data-questionid="13646281" id="question">
+
+    
+    <div class="post-layout">
+            <div class="votecell post-layout--left">
+                
+
+<div class="vote">
+        <input type="hidden" name="_id_" value="13646281">
+        <a class="vote-up-off" title="This question shows research effort; it is useful and clear">up vote</a>
+        <span itemprop="upvoteCount" class="vote-count-post ">2</span>
+        <a class="vote-down-off" title="This question does not show any research effort; it is unclear or not useful">down vote</a>
+
+        <a class="star-off" href="#">favorite</a>
+        <div class="favoritecount"><b>1</b></div>
+
+
+
+</div>
+
+            </div>
+
+            
+<div class="postcell post-layout--right">
+    <div class="post-text" itemprop="text">
+
+<p>I installed the Subversion package version 1.7 on windows 7 operating system using admin account</p>
+
+<p>I created the depository with the following command: <code>svnadmin create "c:\svn_repository"</code></p>
+
+<p>I modified the <code>svnserve.conf</code> and passwd files : <code>anon-access = read</code>, <code>auth-access = write</code>, and <code>password-db = passwd</code></p>
+
+<p>I installed the Subversion as a windows service and I started it using the following commands:</p>
+
+<pre><code>sc create svnserver binpath= "C:\Program Files (x86)\Subversion\bin\svnserve.exe --service -r c:\svn_repository" DisplayName= "Subversion" depend= tcpip start= auto
+</code></pre>
+
+<p>I also setted the variable <code>SVN_EDITOR</code> to : <code>set SVN_EDITOR=c:\windows\system32\notepad.exe</code></p>
+
+<p>The problem I faced is when I invoke the following command :</p>
+
+<pre><code>svn mkdir svn://localhost/myproject
+</code></pre>
+
+<p>I receive the following error :</p>
+
+<pre><code>svn: E200002: Unable to connect to a repository at URL 'svn://localhost'
+svn: E200002: C:\svn_repository\conf\svnserve.conf:19: Option expected
+</code></pre>
+    </div>
+
+        <div class="post-taglist grid gs4 gsy fd-column">
+            <div class="grid ps-relative d-block">
+                <a href="/questions/tagged/windows" class="post-tag" title="show questions tagged &#39;windows&#39;" rel="tag">windows</a> <a href="/questions/tagged/svn" class="post-tag" title="show questions tagged &#39;svn&#39;" rel="tag">svn</a> 
+            </div>
+        </div>
+
+    <div class="mb0 ">
+        <div class="mt16 pt4 grid gs8 gsy fw-wrap jc-end ai-start">
+            <div class="grid--cell mr16" style="flex: 1 1 100px;">
+<div class="post-menu"><a href="/q/13646281" title="short permalink to this question" class="short-link" id="link-post-13646281">share</a><span class="lsep">|</span><a href="/posts/13646281/edit" class="suggest-edit-post" title="">improve this question</a></div>
+            </div>
+
+                <div class="post-signature grid--cell">
+<div class="user-info user-hover">
+    <div class="user-action-time">
+        <a href="/posts/13646281/revisions" title="show all edits to this post">edited <span title="2012-11-30 13:58:51Z" class="relativetime">Nov 30 '12 at 13:58</span></a>
+    </div>
+    <div class="user-gravatar32">
+        <a href="/users/60462/shidoisi"><div class="gravatar-wrapper-32"><img src="https://www.gravatar.com/avatar/64fd87fd2c140ee93f638a624bcc97c9?s=32&amp;d=identicon&amp;r=PG" alt="" width="32" height="32"></div></a>
+    </div>
+    <div class="user-details">
+        <a href="/users/60462/shidoisi">ShiDoiSi</a>
+        <div class="-flair">
+            <span class="reputation-score" title="reputation score " dir="ltr">6,159</span><span title="23 silver badges"><span class="badge2"></span><span class="badgecount">23</span></span><span title="43 bronze badges"><span class="badge3"></span><span class="badgecount">43</span></span>
+        </div>
+    </div>
+</div>                </div>
+            <div class="post-signature owner grid--cell">
+<div class="user-info ">
+    <div class="user-action-time">
+        asked <span title="2012-11-30 13:31:56Z" class="relativetime">Nov 30 '12 at 13:31</span>
+    </div>
+    <div class="user-gravatar32">
+        <a href="/users/1832562/hjab"><div class="gravatar-wrapper-32"><img src="https://www.gravatar.com/avatar/ae7a042d009971840793b9e3c6cc11c2?s=32&amp;d=identicon&amp;r=PG" alt="" width="32" height="32"></div></a>
+    </div>
+    <div class="user-details">
+        <a href="/users/1832562/hjab">HJAB</a>
+        <div class="-flair">
+            <span class="reputation-score" title="reputation score " dir="ltr">32</span><span title="2 gold badges"><span class="badge1"></span><span class="badgecount">2</span></span><span title="2 silver badges"><span class="badge2"></span><span class="badgecount">2</span></span><span title="5 bronze badges"><span class="badge3"></span><span class="badgecount">5</span></span>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+                
+    <div class="post-layout--right">
+	    <div id="comments-13646281" class="comments js-comments-container  dno">
+            <ul class="comments-list js-comments-list" data-remaining-comments-count="0" data-canpost="false" data-cansee="true" data-comments-unavailable="false" data-addlink-disabled="true">
+
+            </ul>
+	    </div>
+
+        <div id="comments-link-13646281" data-rep="50" data-anon="true">
+
+                <a class="js-add-link comments-link disabled-link " title="Use comments to ask for more information or suggest improvements. Avoid answering questions in comments.">add a comment</a><span class="js-link-separator dno">&nbsp;|&nbsp;</span>
+            <a class="js-show-link comments-link dno" title="expand to show all comments on this post" href="#" onclick=""></a>
+        </div>         
+    </div>        </div>
+</div>
+
+
+<div id="dfp-isb" class="everyonelovesstackoverflow everyoneloves__inline-sidebar"></div>
+        
+
+                <a name="tab-top"></a>
+                <div id="answers-header">
+                    <div class="subheader answers-subheader">
+                        <h2 data-answercount="2">
+                                2 Answers
+                                <span style="display:none;" itemprop="answerCount">2</span>
+                        </h2>
+                        <div>
+                            
+<div id="tabs">
+        <a href="/questions/13646281/unable-to-connect-to-a-repository-at-url-svn-localhost?answertab=active#tab-top" data-nav-xhref="" title="Answers with the latest activity first" data-value="active" data-shortcut="A">
+            active</a>
+        <a href="/questions/13646281/unable-to-connect-to-a-repository-at-url-svn-localhost?answertab=oldest#tab-top" data-nav-xhref="" title="Answers in the order they were provided" data-value="oldest" data-shortcut="O">
+            oldest</a>
+        <a class="youarehere is-selected " href="/questions/13646281/unable-to-connect-to-a-repository-at-url-svn-localhost?answertab=votes#tab-top" data-nav-xhref="" title="Answers with the highest score first" data-value="votes" data-shortcut="V">
+            votes</a>
+    </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+  
+<a name="13646373"></a>
+<div id="answer-13646373" class="answer accepted-answer" data-answerid="13646373" itemprop="acceptedAnswer" itemscope="" itemtype="http://schema.org/Answer">
+    <div class="post-layout">
+            <div class="votecell post-layout--left">
+                
+
+<div class="vote">
+        <input type="hidden" name="_id_" value="13646373">
+        <a class="vote-up-off" title="This answer is useful">up vote</a>
+        <span itemprop="upvoteCount" class="vote-count-post ">8</span>
+        <a class="vote-down-off" title="This answer is not useful">down vote</a>
+
+
+
+        <span class="vote-accepted-on load-accepted-answer-date" title="loading when this answer was accepted...">accepted</span>
+
+
+</div>
+
+            </div>
+            
+
+
+<div class="answercell post-layout--right">
+    <div class="post-text" itemprop="text">
+<p>check the svnserve.conf for whitespace at the beginning of the line for  each option you specified (in your case, check line 19 of svnserve.conf, if you have a white space before that line, remove it)</p>
+    </div>
+    <div class="grid mb0 fw-wrap ai-start jc-end gs8 gsy">
+    <div class="grid--cell mr16" style="flex: 1 1 100px;">
+<div class="post-menu"><a href="/a/13646373" title="short permalink to this answer" class="short-link" id="link-post-13646373">share</a><span class="lsep">|</span><a href="/posts/13646373/edit" class="suggest-edit-post" title="">improve this answer</a></div>                    </div>
+            
+
+
+    <div class="post-signature grid--cell fl0">
+<div class="user-info user-hover">
+    <div class="user-action-time">
+        answered <span title="2012-11-30 13:38:24Z" class="relativetime">Nov 30 '12 at 13:38</span>
+    </div>
+    <div class="user-gravatar32">
+        <a href="/users/754484/samuele-mattiuzzo"><div class="gravatar-wrapper-32"><img src="https://www.gravatar.com/avatar/2b0a3c0554d923aa325b6a3edaddafcb?s=32&amp;d=identicon&amp;r=PG" alt="" width="32" height="32"></div></a>
+    </div>
+    <div class="user-details">
+        <a href="/users/754484/samuele-mattiuzzo">Samuele Mattiuzzo</a>
+        <div class="-flair">
+            <span class="reputation-score" title="reputation score " dir="ltr">7,283</span><span title="3 gold badges"><span class="badge1"></span><span class="badgecount">3</span></span><span title="29 silver badges"><span class="badge2"></span><span class="badgecount">29</span></span><span title="57 bronze badges"><span class="badge3"></span><span class="badgecount">57</span></span>
+        </div>
+    </div>
+</div>
+
+    </div>
+    </div>
+</div>
+    
+    <div class="post-layout--right">
+	    <div id="comments-13646373" class="comments js-comments-container ">
+            <ul class="comments-list js-comments-list" data-remaining-comments-count="0" data-canpost="false" data-cansee="true" data-comments-unavailable="false" data-addlink-disabled="true">
+
+
+    <li id="comment-18733807" class="comment js-comment " data-comment-id="18733807">
+        <div class="js-comment-actions comment-actions">
+            <div class="comment-score">
+                    <span title="number of &#39;useful comment&#39; votes received" class="cool">1</span>
+            </div>
+                    </div>
+        <div class="comment-text js-comment-text-and-form">
+            <div class="comment-body" style="display: block;">
+                <span class="comment-copy">Excatly the problem was the whitespace at the begining of options. Thank you for your help.</span>
+                    &ndash;&nbsp;<a href="/users/1832562/hjab" title="32 reputation" class="comment-user owner">HJAB</a>
+                <span class="comment-date" dir="ltr"><span title="2012-11-30 20:44:32Z" class="relativetime-clean">Nov 30 '12 at 20:44</span></span>
+                                                                            </div>
+        </div>
+    </li>
+            </ul>
+	    </div>
+
+        <div id="comments-link-13646373" data-rep="50" data-anon="true">
+
+                <a class="js-add-link comments-link disabled-link " title="Use comments to ask for more information or suggest improvements. Avoid comments like “+1” or “thanks”.">add a comment</a><span class="js-link-separator dno">&nbsp;|&nbsp;</span>
+            <a class="js-show-link comments-link dno" title="expand to show all comments on this post" href="#" onclick=""></a>
+        </div>         
+    </div>    </div>
+</div>
+<div id="dfp-mlb" class="everyonelovesstackoverflow everyoneloves__mid-leaderboard"></div>
+  
+<a name="13646667"></a>
+<div id="answer-13646667" class="answer" data-answerid="13646667" itemscope="" itemtype="http://schema.org/Answer">
+    <div class="post-layout">
+            <div class="votecell post-layout--left">
+                
+
+<div class="vote">
+        <input type="hidden" name="_id_" value="13646667">
+        <a class="vote-up-off" title="This answer is useful">up vote</a>
+        <span itemprop="upvoteCount" class="vote-count-post ">1</span>
+        <a class="vote-down-off" title="This answer is not useful">down vote</a>
+
+
+
+
+
+</div>
+
+            </div>
+            
+
+
+<div class="answercell post-layout--right">
+    <div class="post-text" itemprop="text">
+<p><code>-r c:\svn_repository"</code> and <code>svnadmin create c:\svn_repository</code> are incompatible</p>
+
+<p>-r define <strong>common root of repositories</strong> and can't be repository per se</p>
+    </div>
+    <div class="grid mb0 fw-wrap ai-start jc-end gs8 gsy">
+    <div class="grid--cell mr16" style="flex: 1 1 100px;">
+<div class="post-menu"><a href="/a/13646667" title="short permalink to this answer" class="short-link" id="link-post-13646667">share</a><span class="lsep">|</span><a href="/posts/13646667/edit" class="suggest-edit-post" title="">improve this answer</a></div>                    </div>
+            
+
+
+    <div class="post-signature grid--cell fl0">
+<div class="user-info ">
+    <div class="user-action-time">
+        answered <span title="2012-11-30 13:57:10Z" class="relativetime">Nov 30 '12 at 13:57</span>
+    </div>
+    <div class="user-gravatar32">
+        <a href="/users/960558/lazy-badger"><div class="gravatar-wrapper-32"><img src="https://www.gravatar.com/avatar/646a1d7964f88fd9296f93e96c787c0a?s=32&amp;d=identicon&amp;r=PG" alt="" width="32" height="32"></div></a>
+    </div>
+    <div class="user-details">
+        <a href="/users/960558/lazy-badger">Lazy Badger</a>
+        <div class="-flair">
+            <span class="reputation-score" title="reputation score " dir="ltr">1</span>
+        </div>
+    </div>
+</div>
+
+    </div>
+    </div>
+</div>
+    
+    <div class="post-layout--right">
+	    <div id="comments-13646667" class="comments js-comments-container ">
+            <ul class="comments-list js-comments-list" data-remaining-comments-count="0" data-canpost="false" data-cansee="true" data-comments-unavailable="false" data-addlink-disabled="true">
+
+
+    <li id="comment-18733813" class="comment js-comment " data-comment-id="18733813">
+        <div class="js-comment-actions comment-actions">
+            <div class="comment-score">
+            </div>
+                    </div>
+        <div class="comment-text js-comment-text-and-form">
+            <div class="comment-body" style="display: block;">
+                <span class="comment-copy">Thank you for your help.</span>
+                    &ndash;&nbsp;<a href="/users/1832562/hjab" title="32 reputation" class="comment-user owner">HJAB</a>
+                <span class="comment-date" dir="ltr"><span title="2012-11-30 20:45:01Z" class="relativetime-clean">Nov 30 '12 at 20:45</span></span>
+                                                                            </div>
+        </div>
+    </li>
+            </ul>
+	    </div>
+
+        <div id="comments-link-13646667" data-rep="50" data-anon="true">
+
+                <a class="js-add-link comments-link disabled-link " title="Use comments to ask for more information or suggest improvements. Avoid comments like “+1” or “thanks”.">add a comment</a><span class="js-link-separator dno">&nbsp;|&nbsp;</span>
+            <a class="js-show-link comments-link dno" title="expand to show all comments on this post" href="#" onclick=""></a>
+        </div>         
+    </div>    </div>
+</div>
+                                    <a name="new-answer"></a>
+
+
+
+                        <h2 class="bottom-notice" data-loc="1">
+</h2>
+            
+    </body>
+    </html>

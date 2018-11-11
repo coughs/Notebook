@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="referrer" content="origin" />
+
+<!-- nodata 第三栏接口无数据时样式不变 -->
+<body class="nodata"> 
+    
+
+		<div class="article-header-box">
+		<div class="article-header">
+			<div class="article-title-box">
+								<h1 class="title-article">SVN的错误：Error: Can't connect to host '': 由于目标机器积极拒绝，无法连接</h1>
+			</div>
+			<div class="article-info-box">
+				<div class="article-bar-top">
+																				<span class="time">2010年07月10日 20:01:00</span>
+					<a class="follow-nickName" href="https://me.csdn.net/zgmzyr" target="_blank">zgmzyr</a>
+						<span class="read-count">阅读数：41217</span>
+						
+														<span class="tags-box artic-tag-box">
+								<span class="label">标签：</span>
+																<a data-track-click='{"mod":"popu_626","con":"svn"}' data-track-view='{"mod":"popu_626","con":"svn"}' class="tag-link" href="http://so.csdn.net/so/search/s.do?q=svn&amp;t=blog" target="_blank">svn																<a data-track-click='{"mod":"popu_626","con":"import"}' data-track-view='{"mod":"popu_626","con":"import"}' class="tag-link" href="http://so.csdn.net/so/search/s.do?q=import&amp;t=blog" target="_blank">import																<a data-track-click='{"mod":"popu_626","con":"subversion"}' data-track-view='{"mod":"popu_626","con":"subversion"}' class="tag-link" href="http://so.csdn.net/so/search/s.do?q=subversion&amp;t=blog" target="_blank">subversion																<a data-track-click='{"mod":"popu_626","con":"服务器"}' data-track-view='{"mod":"popu_626","con":"服务器"}' class="tag-link" href="http://so.csdn.net/so/search/s.do?q=服务器&amp;t=blog" target="_blank">服务器																<a data-track-click='{"mod":"popu_626","con":"file"}' data-track-view='{"mod":"popu_626","con":"file"}' class="tag-link" href="http://so.csdn.net/so/search/s.do?q=file&amp;t=blog" target="_blank">file																<a data-track-click='{"mod":"popu_626","con":"cmd"}' data-track-view='{"mod":"popu_626","con":"cmd"}' class="tag-link" href="http://so.csdn.net/so/search/s.do?q=cmd&amp;t=blog" target="_blank">cmd																</a>
+							</a></a></a></a></a></span>
+																					<div class="tags-box space">
+								<span class="label">个人分类：</span>
+																<a class="tag-link" href="https://blog.csdn.net/zgmzyr/article/category/682784" target="_blank">SVN																</a>
+							</div>
+																								</div>
+				<div class="operating">
+														</div>
+			</div>
+		</div>
+	</div>
+	
+		<div id="article_content" class="article_content clearfix csdn-tracking-statistics" data-pid="blog" data-mod="popu_307" data-dsm="post">
+								            
+						<div class="htmledit_views">
+                <div class="tit"><span style="font-size:medium;">SVN的错误：Error: Can't connect to host '': 由于目标机器积极拒绝，无法连接。</span></div>
+<div class="date"><span style="font-size:medium;">2009年08月03日 星期一 14:24</span></div>
+<table style="table-layout:fixed;" border="0"><tbody><tr><td>
+<div id="blog_text" class="cnt">
+<p><span style="font-size:medium;">    安装完TSVN之后，checkout时报错，并且后来在cmd命令行下，测试svn的3690端口是否打开：telnet localhost 3690 ，结果也是不成功，后来发现少执行了一步操作。</span></p>
+<p><span style="font-size:medium;">    正确的做法：安装完TSVN之后，在subversion的安装路径下，找到bin文件夹，需要完成下面几步操作：</span></p>
+<p><span style="font-size:medium;">1、在下面新建一个setupservice.bat文件，内容是</span></p>
+<p><span style="font-size:medium;">sc create svnserve binpath= "C:/Program Files/Subversion/bin/svnserve.exe --service -r d:/svnhome" depend= Tcpip start= auto<br>sc start svnserve<br>pause</span></p>
+<p><span style="font-size:medium;">保存</span></p>
+<p><span style="font-size:medium;">2、<span style="color:#ff0000;">运行</span>，这是在服务里可找到一个名为svnserve的服务。这样就不会报“由于目标机器积极拒绝，无法连接。”这个错了。</span></p>
+<p><span style="font-size:medium;">我后来找到了我是因为没有执行第二步，所以svnserve没有作为一个服务启动。</span></p>
+<p><span style="font-size:medium;">这是在cmd命令行下查看打开的端口：netstat -ano就看到3690端口打开了</span></p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p><span style="font-size:medium;">=================================</span></p>
+<p> </p>
+<p> </p>
+<p><span style="font-size:medium;">（问题搜集）<br>配置服务器：<br>修改了svnserve。conf中的<br>anon-access = read<br>auth-access = write<br>password-db = passwd<br>realm = svnhome<br>和passwd中【user】<br>admin ＝ mypassword<br>能够启动服务器<br>svnservice -install -d -r d:/svnhome<br>不过要先执行svnservice -remove，否则不能成功！（仅限于我的机器）<br>导入时<br>svn import D:/myproject svn://localhos<br>t/svnhome -m "initial import" --username admin --password mypassword<br>时报错：svn: 无法连接主机“localhost”: 由于目标机器积极拒绝，无法连接。<br>用svn import D:/myproject </span><a><span style="font-size:medium;">file:///D:/svnhome</span></a><span style="font-size:medium;"> -m "initial import" --username admin --password mypassword成功<br>这是为什么？<br>问题二： 能不能在配置服务器时，设置匿名的管理 而不需要admin ＝ mypassword？还有realm = svnhome 这条语句是必需要改的吗？为什么一定要realm＝库所在文件夹名？<br>问题三：svn import D:/myproject </span><a><span style="font-size:medium;">file:///D:/svnhome</span></a><span style="font-size:medium;"> -m "initial import" --username admin --password mypassword 这条语句中 必需要 -m ""吗？我不要的话，就不能执行。（因为很多介绍import命令的资料上都没注明这点，故有此一问）</span></p>
+<p><span style="font-size:medium;">恳请各位解答！跪谢！<br>用的是svn的命令行形式。<br>首先安装好了svn后，设置PATH，将其值设置成svn的安装目录（D:/Program Files/Subversion）+/bin，即D:/Program Files/Subversion/bin<br>然后将空文件夹(d：/svnhome)设置成我的版本库，使用的命令行是svnadmin create d:/svnhome.  这时在d:/svnhome文件中已经有了其他子文件，说明版本库建立成功。<br>下一步是将我的工程myproject这个文件夹（在D盘）导入版本库，使用的命令行是svn import d:/myproject svn://localhost/svnhome/<br>回车后，命令行（cmd.exe）中出现svn: ?/229?/174?/137?/229?/133?/168?/230?/149?/176?/230?/141?/174?/226?/128?/156</span></p>
+<p><span style="font-size:medium;">--?/226?/128?/157?/229?/144?/142?/233?/157?/162?/230?/152?/175?/233?/157?/158ASC<br>II?/229?/173?/151?/232?/138?/130 230: ?/228?/184?/141?/232?/131?/189?/232?/189?/<br>172?/230?/141?/162?/229?/136?/176/?/232?/135?/170 UTF-8</span></p>
+<p><br><span style="font-size:medium;">1你还没有启动svnserve，所以无法使用svn://协议<br>要么你启动svnserve ，要么使用file://协议</span></p>
+<p><span style="font-size:medium;">假设你这样启动svnserve：<br>svnserve -d -r d:/svnhome<br>那么可以使用svn://localhost来访问你的版本库，导入时的命令<br>svn import d:/myproject svn://localhost</span></p>
+<p><span style="font-size:medium;">ps:有时间多看看本论坛首页中部的那些链接，都是经典<br>本文来自[Svn中文网]转发请保留本站地址：</span><a href="http://www.svn8.com/svnzixun/20080329/444.html" rel="nofollow"><span style="font-size:medium;">http://www.svn8.com/svnzixun/20080329/444.html</span></a></p>
+</div>
+</td>
+</tr></tbody></table>            </div>
+                </div>
+									
+</body>
+</html>
