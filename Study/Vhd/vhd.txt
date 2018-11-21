@@ -1,0 +1,52 @@
+Vhd.txt
+
+f87010a9-fdb8-11df-8de6-005056c00008
+
+bcdedit /store c:\boot\bcd /copy {default} /d "Windows 7 VHD USB"
+
+bcdedit /set {05427554-331e-11e8-a30b-b938a053b97a} device  partition=g:
+bcdedit /set {05427554-331e-11e8-a30b-b938a053b97a} osdevice  partition=g:
+
+bcdedit /set {f87010a9-fdb8-11df-8de6-005056c00008} device vhd=[f:]\Vhd\W7.vhd
+bcdedit /set {f87010a9-fdb8-11df-8de6-005056c00008} osdevice vhd=[f:]\Vhd\W7.vhd
+bcdedit /set {f87010a9-fdb8-11df-8de6-005056c00008} detecthal on
+bcdedit /displayorder {f87010a9-fdb8-11df-8de6-005056c00008} /addlast
+
+
+bcdedit /store h:\boot\bcd /set {5a6e5cd4-f226-11df-aaf1-005056c00008} device vhd=[f:]\Vhd\Main4G.vhd
+bcdedit /store h:\boot\bcd /set {5a6e5cd4-f226-11df-aaf1-005056c00008} osdevice vhd=[f:]\Vhd\Main4G.vhd
+
+
+bcdedit /copy {default} /d "Win7 VHD"
+
+bcdedit /set {1cbc6b37-fdc2-11df-a676-00158315a310} device vhd=[d:]\Vhd\W7.vhd
+bcdedit /set {1cbc6b37-fdc2-11df-a676-00158315a310} osdevice vhd=[d:]\Vhd\W7.vhd
+bcdedit /set {1cbc6b37-fdc2-11df-a676-00158315a310} detecthal on
+bcdedit /displayorder {1cbc6b37-fdc2-11df-a676-00158315a310} /addlast
+
+bcdedit /set {1cbc6b37-fdc2-11df-a676-00158315a310} locale zh-CN
+
+
+bcdedit /set {5a6e5cd4-f226-11df-aaf1-005056c00008} testsigning Yes
+bcdedit /set {5a6e5cd4-f226-11df-aaf1-005056c00008} kernel ntkr128g.exe
+bcdedit /set {5a6e5cd4-f226-11df-aaf1-005056c00008} pae ForceEnable
+-------------------
+testsigning             Yes
+kernel                  ntkr128g.exe
+pae                     ForceEnable
+-------------------
+
+6.将VHD挂载到真实物理机中。
+刚才那儿成功了就已经完成了一大半了。现在重启你的计算机，用Win7的安装光盘引导。等出现win7安装界面后按 Shift + F10启动CMD。
+输入如下命令：
+diskpart
+Select vdisk file=E:\Win7VHD.vhd（file=后面是你的VHD文件存放位置）
+attach vdisk
+select partition 1
+assign letter Z
+exit
+bcdboot Z:\Windows /S C:
+
+利用ESD文件快速更新Windows10
+https://wenku.baidu.com/view/71fb9604f6ec4afe04a1b0717fd5360cba1a8dd9.html
+
