@@ -1,0 +1,97 @@
+sqlplus system/iesapp@xe as sysdba
+
+SQL> SPOOL C:\oracle\temp.log
+SQL> GRANT DROP ANY INDEXTYPE,CREATE ANY TABLE TO ——_m;
+
+SQL> connect idp_pub_m/iesapp@xe
+SQL> @c:\oracle\cim11-ext20091104.sql
+SQL> connect system/iesapp@xe
+SQL> drop user idp_pub_m cascade;
+SQL> create user idp_pub_m identified by iesapp;
+SQL> grant dba, create any table, select any table, drop any index to idp_pub_m;
+SQL> @c:\oracle\cim11_ext.sql
+
+
+SQL> SPOOL ON
+SQL> SPOOL OFF?
+
+exp idp_pub_h/iesapp@idppubh file=idppubh.dmp
+imp idp_pub_h/iesapp@idppubh file=c:\idppubh.dmp full=y;
+
+sqlplus idp_pub_m/iesapp@xe @2-增加DaisNode描述.sql
+
+
+1.在win7防火墙中打开1521端口：防火墙-入站规则-新建
+2.修改客户端C:\WINDOWS\system32\drivers\etc\hosts中添加一行：??server_ip??server_name
+
+之后在客户端可以用plsql登录。
+
+源文档 <http://www.itpub.net/viewthread.php?tid=1376189> 
+SQL>CREATE USER "idp_m" PROFILE "DEFAULT" IDENTIFIED BY "iesapp" DEFAULT TABLESPACE "IES_MIAOSHU_TABLESPACE" TEMPORARY TABLESPACE "TEMP" ACCOUNT UNLOCK;
+GRANT CONNECT,RESOURCE,DBA TO idp_m;
+
+SQL>CREATE USER idp_pub_m PROFILE DEFAULT IDENTIFIED BY iesapp DEFAULT TABLESPACE IES_MIAOSHU_TABLESPACE TEMPORARY TABLESPACE TEMP ACCOUNT UNLOCK;
+GRANT CONNECT,RESOURCE,DBA TO idp_pub_m;
+
+impdp idp_pub_m2/iesapp@orcl DIRECTORY=db_bak DUMPFILE=idpm151210.dmp REMAP_SCHEMA=idp_pub_m:idp_pub_m2
+
+create directory db_bak as 'd:\test\dump';
+select * from dba_directories;
+grant read,write on directory db_bak to system;;
+
+expdp idp_pub_m/iesapp@idpdb schemas=system dumpfile=expdp.dmp DIRECTORY=db_bak 
+impdp idp_pub_m/iesapp@idpdb DIRECTORY=db_bak DUMPFILE=expdp.dmp SCHEMAS=idp_system
+
+drop user idp_pub_m cascade;
+create user idp_pub_m identified by iesapp;
+grant dba, create any table, select any table, drop any index to idp_pub_m;
+
+
+expdp idp_pub_m/iesapp@orcl schemas=idp_pub_m dumpfile=idpm20160202.dmp DIRECTORY=db_bak 
+impdp idp_pub_m/iesapp@idpdb DIRECTORY=db_bak DUMPFILE=idpm20160216.dmp SCHEMAS=idp_pub_m
+impdp idp_sys/iesapp@idpdb DIRECTORY=db_bak DUMPFILE=IDPSYS20160216.dmp SCHEMAS=idp_sys
+impdp idp_pub_h/iesapp@idpdb DIRECTORY=db_bak DUMPFILE=IDPPUBH20160216.dmp SCHEMAS=idp_pub_h
+
+expdp liferay/iesapp@orcl schemas=liferay dumpfile=liferay.dmp DIRECTORY=db_bak
+
+
+一、在11g服务器上，使用expdp命令备份数据
+
+EXPDP USERID='SYS/cuc2009@cuc as sysdba' schemas=sybj directory=DATA_PUMP_DIR dumpfile=aa.dmp logfile=aa.log version=10.2.0.1.0
+
+其中，红色文字部分是根据需要改写的地方。例如我的sys密码是cuc2009，数据库sid是cuc，要到出的用户名是sybj，要导入到10.2.0.1.0版本的Oracle数据库中去。aa.dmp和aa.log将会在11g的dpdump目录中生成，例如我的11g装在了E盘下面，于是aa.dmp将会在E:\app\Administrator\admin\cuc\dpdump目录下被生成。
+
+二、在10g服务器上，使用impdp命令恢复数据
+
+准备工作：1.建库2.建表空间3.建用户并授权4.将aa.dmp拷贝到10g的dpdump目录下
+
+1-3点可以去参考博主的上一篇博客“Oracle数据库移植全步骤”，介绍的很详细，这里不再多说。关于第4点，我的10g装在了e:\tools目录下，于是我将aa.dmp文件拷贝到了E:\tools\admin\cucf\dpdump目录下。
+
+IMPDP USERID='SYS/cuc2009@cucf as sysdba' schemas=sybj directory=DATA_PUMP_DIR dumpfile=aa.dmp logfile=aa.log version=10.2.0.1.0
+
+--导出oracle11G数据库文件为10G版本
+expdp idp_pub_m/iesapp@idpdb schemas=idp_pub_m dumpfile=idpm_v10.dmp DIRECTORY=db_bak  logfile=m.log version=10.2.0.1.0
+expdp idp_sys/iesapp@idpdb schemas=idp_sys dumpfile=idpsys_v10.dmp DIRECTORY=db_bak  logfile=sys.log version=10.2.0.1.0
+expdp idp_pub_h/iesapp@idpdb DIRECTORY=db_bak DUMPFILE=idph_v10.dmp SCHEMAS=idp_pub_h  logfile=h.log version=10.2.0.1.0
+expdp liferay/iesapp@idpdb DIRECTORY=db_bak DUMPFILE=liferay_v10.dmp SCHEMAS=liferay  logfile=liferay.log version=10.2.0.1.0
+
+
+IMPDP idp_pub_m/iesapp@orcl schemas=idp_pub_m dumpfile=idpm_v10.dmp DIRECTORY=db_bak  logfile=m.log version=10.2.0.1.0
+IMPDP idp_sys/iesapp@orcl schemas=idp_sys dumpfile=idpsys_v10.dmp DIRECTORY=db_bak  logfile=sys.log version=10.2.0.1.0
+IMPDP idp_pub_h/iesapp@orcl DIRECTORY=db_bak DUMPFILE=idph_v10.dmp SCHEMAS=idp_pub_h  logfile=h.log version=10.2.0.1.0
+IMPDP liferay/iesapp@orcl DIRECTORY=db_bak DUMPFILE=liferay_v10.dmp SCHEMAS=liferay  logfile=liferay.log version=10.2.0.1.0
+
+
+--导出oracle11G数据库文件
+expdp idp_pub_m/iesapp@idpdb schemas=idp_pub_m dumpfile=idpm_v11.dmp DIRECTORY=db_bak  logfile=m.log 
+expdp idp_sys/iesapp@idpdb schemas=idp_sys dumpfile=idpsys_v11.dmp DIRECTORY=db_bak  logfile=sys.log 
+expdp idp_pub_h/iesapp@idpdb DIRECTORY=db_bak DUMPFILE=idph_v11.dmp SCHEMAS=idp_pub_h  logfile=h.log 
+expdp liferay/iesapp@idpdb DIRECTORY=db_bak DUMPFILE=liferay_v11.dmp SCHEMAS=liferay  logfile=liferay.log 
+
+
+--导入
+IMPDP idp_pub_m/iesapp@idpdb schemas=idp_pub_m dumpfile=idpm_v11.dmp DIRECTORY=db_bak  logfile=m.log 
+IMPDP idp_sys/iesapp@idpdb schemas=idp_sys dumpfile=idpsys_v11.dmp DIRECTORY=db_bak  logfile=sys.log 
+IMPDP idp_pub_h/iesapp@idpdb DIRECTORY=db_bak DUMPFILE=idph_v11.dmp SCHEMAS=idp_pub_h  logfile=h.log 
+IMPDP liferay/iesapp@idpdb DIRECTORY=db_bak DUMPFILE=liferay_v11.dmp SCHEMAS=liferay  logfile=liferay.log
+
